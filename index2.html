@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="bn" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Md Mahim Hosen - ডিজিটাল পোর্টফোলিও</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* --- 1. সাধারণ ট্রানজিশন এবং অ্যানিমেশন --- */
+        
+         /* মোবাইল মেনু টগল */
+         .mobile-menu {
+             transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+             max-height: 0;
+             opacity: 0;
+             overflow: hidden;
+         }
+         .mobile-menu.is-open {
+             max-height: 300px; /* মেনুর উচ্চতার চেয়ে বেশি একটি মান */
+             opacity: 1;
+         }
+        /* সেকশন এন্ট্রি অ্যানিমেশন */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .animate-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* কার্ড হোভার এফেক্ট */
+        .project-card {
+            /* bg-gray-100 সেট করার পর এই বক্স-শ্যাডো আরও ভালো দেখাবে */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+        .project-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px) scale(1.02);
+        }
+        
+        /* বাটন হোভার এফেক্ট */
+        .btn-primary {
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4); /* Indigo-600 shadow */
+        }
+
+        /* হিরো সেকশন কোড গ্লো অ্যানিমেশন */
+        @keyframes code-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(99, 102, 241, 0.6), 0 0 5px rgba(99, 102, 241, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(99, 102, 241, 0.9), 0 0 10px rgba(99, 102, 241, 0.4); }
+        }
+        .code-bg-glow {
+            animation: code-glow 4s infinite alternate;
+            z-index: 0; /* গ্লো ওভারলের নিচে থাকবে */
+        }
+
+        /* দক্ষতা ট্যাগ স্লাইড-ইন অ্যানিমেশন */
+        @keyframes tag-slide-in {
+            from { transform: translateX(-10px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .skill-tag-animate {
+            animation: tag-slide-in 0.5s ease-out;
+        }
+
+        /* ডটেড ব্যাকগ্রাউন্ডের জন্য কাস্টম প্যাটার্ন */
+        .bg-dots {
+            background-image: radial-gradient(circle, #d1d5db 1px, transparent 1px);
+            background-size: 15px 15px;
+        }
+
+        /* --- 2. হিরো সেকশন (ID: #hero) কাস্টম স্টাইল --- */
+        
+        #hero {
+            /* Padding/Space for Mobile (py-24 equivalent) */
+            padding-top: 6rem; /* 96px */
+            padding-bottom: 6rem; /* 96px */
+            
+            position: relative; /* ওভারলে এবং কন্টেন্ট পজিশনের জন্য দরকার */
+            overflow: hidden;
+
+            /* ব্যাকগ্রাউন্ড ইমেজ সেট করা */
+            background-image: url('asset/3.jpeg'); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat;
+            
+            /* ঐচ্ছিক: ছবি স্ক্রল করলে স্থির থাকবে */
+            /* background-attachment: fixed; */
+        }
+
+        /* Tablet/Desktop Padding (md:py-40 equivalent) */
+        @media (min-width: 768px) {
+            #hero {
+                padding-top: 10rem; /* 160px */
+                padding-bottom: 10rem; /* 160px */
+            }
+        }
+
+        /* কালো ওভারলের জন্য স্টাইল (hero-overlay class) */
+        /* Tailwind-এর bg-black/50 এবং inset-0 এর কাজ করবে */
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* ** এখানে ভুল সংশোধন করা হয়েছে ** */
+            background-color: rgba(0, 0, 0, 0.5); /* 50% অপাসিটি সহ কালো */
+            z-index: 1; /* কন্টেন্টের নিচে থাকবে */
+        }
+
+        /* কন্টেন্ট যেন ওভারলের উপরে থাকে */
+        #hero .container {
+            position: relative;
+            z-index: 2; /* ওভারলের (z-index: 1) চেয়ে বেশি */
+        }
+
+        /* লেখাগুলো যেন ওভারলের উপরে স্পষ্ট হয়, তাই রঙের পরিবর্তন CSS-এ প্রয়োজন নেই, 
+           কারণ এটি Tailwind ক্লাসের মাধ্যমে HTML-এ (text-white) সেট করা আছে। */
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <header class="bg-gray-800 shadow-xl sticky top-0 z-50 backdrop-blur-sm bg-opacity-95">
+    <div class="container mx-auto px-6">
+        <nav class="py-4 flex justify-between items-center">
+            <a href="#" class="text-3xl font-extrabold text-indigo-400 hover:text-indigo-300 tracking-widest transition duration-300">
+                Md Mahim Hosen
+            </a>
+            
+            <div class="space-x-8 hidden md:block font-medium">
+                <a href="#about" class="text-gray-300 hover:text-indigo-400 transition duration-300 relative nav-link">
+                    আমার সম্পর্কে
+                    <span class="absolute left-0 bottom-0 h-0.5 w-0 bg-indigo-400 transition-all duration-300"></span>
+                </a>
+                <a href="#skills" class="text-gray-300 hover:text-indigo-400 transition duration-300 relative nav-link">
+                    দক্ষতা
+                    <span class="absolute left-0 bottom-0 h-0.5 w-0 bg-indigo-400 transition-all duration-300"></span>
+                </a>
+                <a href="#projects" class="text-gray-300 hover:text-indigo-400 transition duration-300 relative nav-link">
+                    প্রজেক্ট
+                    <span class="absolute left-0 bottom-0 h-0.5 w-0 bg-indigo-400 transition-all duration-300"></span>
+                </a>
+                <a href="#contact" class="bg-indigo-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-indigo-700 transition duration-300 shadow-md">
+                    যোগাযোগ
+                </a>
+            </div>
+            
+            <button id="menu-button" class="md:hidden text-white focus:outline-none p-2 rounded-md hover:bg-gray-700">
+                <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </nav>
+        
+        <div id="mobile-menu" class="md:hidden bg-gray-700 mobile-menu">
+            <a href="#about" class="block py-3 px-6 text-gray-200 hover:bg-gray-600 border-t border-gray-600 transition duration-300">আমার সম্পর্কে</a>
+            <a href="#skills" class="block py-3 px-6 text-gray-200 hover:bg-gray-600 border-t border-gray-600 transition duration-300">দক্ষতা</a>
+            <a href="#projects" class="block py-3 px-6 text-gray-200 hover:bg-gray-600 border-t border-gray-600 transition duration-300">প্রজেক্ট</a>
+            <a href="#contact" class="block py-3 px-6 text-white bg-indigo-600 hover:bg-indigo-700 transition duration-300 border-t border-gray-600">যোগাযোগ</a>
+        </div>
+    </div>
+</header>
+   
+   <section 
+    class="text-center relative overflow-hidden" 
+    id="hero">
+
+    <div class="absolute top-1/2 left-1/2 w-96 h-96 -translate-x-1/2 -translate-y-1/2 code-bg-glow rounded-full blur-3xl z-0 opacity-40"></div>
+
+    <div class="hero-overlay"></div> <div class="container mx-auto px-6 animate-on-scroll relative z-10">
+        <img class="w-64 h-64 rounded-full mx-auto mb-6 border-4 border-indigo-500 shadow-2xl object-cover" 
+             src="asset/Generated Image November 07, 2025 - 10_07PM.png" 
+             alt="আপনার ছবি">
+        
+        <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-3">
+            <span class="text-indigo-400">ডিজিটাল আর্কিটেক্ট</span> <br class="hidden sm:inline"> <span class="text-white">Md Mahim Hosen</span>
+        </h1>
+        
+        <p class="text-xl md:text-3xl text-gray-200 mb-10 font-light">
+            Frontend Developer & <span class="font-semibold text-red-400">Canva Pro</span> Design Expert
+        </p>
+        
+        <a href="#projects" class="btn-primary bg-indigo-600 text-white px-10 py-4 rounded-full text-lg font-semibold hover:bg-indigo-700 shadow-xl inline-block transition duration-300">
+            কাজ দেখুন →
+        </a>
+    </div>
+</section>
+    <section class="py-20 md:py-32" id="about">
+        <div class="container mx-auto px-6 animate-on-scroll">
+            <h2 class="text-4xl font-bold text-center mb-16 text-gray-900 relative after:content-[''] after:block after:w-16 after:h-1 after:bg-indigo-500 after:mx-auto after:mt-3">
+                আমার সম্পর্কে
+            </h2>
+            <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 text-lg text-gray-700">
+                <div class="md:border-r md:pr-12">
+                    <p class="mb-6">আমি <span class="font-bold text-indigo-600">আপনার প্রতিষ্ঠানের নাম</span>-এ <span class="font-semibold">আপনার বিভাগ</span>-এ পড়াশোনা করছি। আমার লক্ষ্য হলো প্রযুক্তিগত দক্ষতা ও সৃজনশীল ডিজাইনকে একত্রিত করে কার্যকরী এবং নান্দনিক সমাধান তৈরি করা।</p>
+                    <p class="mb-6">আমি জাভাস্ক্রিপ্ট এবং আধুনিক ফ্রন্ট-এন্ড টুলস (যেমন: Tailwind) ব্যবহার করে ফাস্ট-লোডিং, রেসপন্সিভ ওয়েবসাইট তৈরি করি।</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-4">শিক্ষা এবং অর্জন</h3>
+                    <ul class="space-y-3">
+                        <li class="p-3 bg-white rounded-lg shadow-sm border-l-4 border-indigo-500">
+                            <span class="font-bold">আপনার ডিগ্রী</span> - আপনার প্রতিষ্ঠানের নাম, সাল।
+                        </li>
+                        <li class="p-3 bg-white rounded-lg shadow-sm border-l-4 border-indigo-500">
+                            <span class="font-bold">গুরুত্বপূর্ণ অর্জন ১</span> - হ্যাকাথন বিজয়/সম্মান।
+                        </li>
+                        <li class="p-3 bg-white rounded-lg shadow-sm border-l-4 border-indigo-500">
+                            <span class="font-bold">গুরুত্বপূর্ণ অর্জন ২</span> - সার্টিফিকেট/কোর্স সম্পন্ন।
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 md:py-32 bg-gray-900 text-white" id="skills">
+        <div class="container mx-auto px-6 animate-on-scroll">
+            <h2 class="text-4xl font-bold text-center mb-16 relative after:content-[''] after:block after:w-16 after:h-1 after:bg-red-500 after:mx-auto after:mt-3">
+                দক্ষতা এবং টুলস
+            </h2>
+            <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
+                
+                <div>
+                    <h3 class="text-3xl font-semibold text-indigo-400 mb-6">ওয়েব ডেভেলপমেন্ট</h3>
+                    <div class="flex flex-wrap gap-4">
+                        <span class="bg-indigo-600 text-white text-md font-medium px-5 py-2 rounded-full shadow-lg hover:bg-indigo-500 transition skill-tag-animate" style="animation-delay: 0.1s;">HTML & CSS</span>
+                        <span class="bg-indigo-600 text-white text-md font-medium px-5 py-2 rounded-full shadow-lg hover:bg-indigo-500 transition skill-tag-animate" style="animation-delay: 0.2s;">Tailwind CSS (Expert)</span>
+                        <span class="bg-indigo-600 text-white text-md font-medium px-5 py-2 rounded-full shadow-lg hover:bg-indigo-500 transition skill-tag-animate" style="animation-delay: 0.3s;">JavaScript (ES6+)</span>
+                        <span class="bg-indigo-600 text-white text-md font-medium px-5 py-2 rounded-full shadow-lg hover:bg-indigo-500 transition skill-tag-animate" style="animation-delay: 0.4s;">Git / GitHub</span>
+                        <span class="bg-indigo-600 text-white text-md font-medium px-5 py-2 rounded-full shadow-lg hover:bg-indigo-500 transition skill-tag-animate" style="animation-delay: 0.5s;">React/Vue (যদি জানেন)</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-3xl font-semibold text-red-400 mb-6">ডিজাইন ও Canva Pro</h3>
+                    <p class="text-lg text-gray-300 mb-6">
+                        আমি <span class="font-bold text-red-400">Canva Pro</span>-এর অ্যাডভান্সড ফিচার ব্যবহার করে ব্র্যান্ডিং, প্রেজেন্টেশন এবং অত্যাধুনিক সোশ্যাল মিডিয়া ক্যাম্পেইন তৈরি করি।
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <span class="bg-red-600 text-white text-md font-medium px-5 py-2 rounded-full shadow-lg hover:bg-red-500 transition skill-tag-animate" style="animation-delay: 0.6s;">Canva Pro (Advanced)</span>
+                        <span class="bg-red-600 text-white text-md font-medium px-5 py-2 rounded-full shadow-lg hover:bg-red-500 transition skill-tag-animate" style="animation-delay: 0.7s;">UI/UX বেসিকস</span>
+                        <span class="bg-red-600 text-white text-md font-medium px-5 py-2 rounded-full shadow-lg hover:bg-red-500 transition skill-tag-animate" style="animation-delay: 0.8s;">Branding & Identity</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="py-20 md:py-32" id="projects">
+        <div class="container mx-auto px-6 animate-on-scroll">
+            <h2 class="text-4xl font-bold text-center mb-16 text-gray-900 relative after:content-[''] after:block after:w-16 after:h-1 after:bg-indigo-500 after:mx-auto after:mt-3">
+                নির্বাচিত প্রজেক্ট
+            </h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+                
+                <div class="bg-gray-100 rounded-xl overflow-hidden project-card animate-on-scroll" style="transition-delay: 0s;">
+                    <img class="w-full h-56 object-cover" src="project-image-1.jpg" alt="প্রজেক্টের ছবি">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-3 text-indigo-600">Tailwind ল্যান্ডিং পেজ</h3>
+                        <p class="text-gray-600 mb-4">একটি সম্পূর্ণ রেসপন্সিভ এবং আধুনিক ল্যান্ডিং পেজ, যা Tailwind CSS দিয়ে দ্রুত ডিজাইন করা হয়েছে।</p>
+                        <a href="#" target="_blank" class="text-md font-semibold text-indigo-500 hover:text-indigo-700 flex items-center">
+                            ভিউ প্রজেক্ট 
+                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-gray-100 rounded-xl overflow-hidden project-card animate-on-scroll" style="transition-delay: 0.15s;">
+                    <img class="w-full h-56 object-cover" src="canva-design-image.jpg" alt="Canva ডিজাইন কালেকশন">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-3 text-red-600">Canva Pro ডিজাইন গ্যালারি</h3>
+                        <p class="text-gray-600 mb-4">ক্লায়েন্টদের জন্য তৈরি প্রফেশনাল লোগো, পোস্টার এবং ইনফোগ্রাফিক্সের সেরা উদাহরণ।</p>
+                        <a href="#" target="_blank" class="text-md font-semibold text-red-500 hover:text-red-700 flex items-center">
+                            ভিউ গ্যালারি 
+                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-100 rounded-xl overflow-hidden project-card animate-on-scroll" style="transition-delay: 0.3s;">
+                    <img class="w-full h-56 object-cover" src="project-image-3.jpg" alt="প্রজেক্টের ছবি">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-3 text-indigo-600">JavaScript ইন্টারেক্টিভ অ্যাপ</h3>
+                        <p class="text-gray-600 mb-4">একটি ছোট, ফাংশনাল JS অ্যাপ যা ডোম ম্যানিপুলেশন এবং লজিক্যাল দক্ষতা প্রদর্শন করে।</p>
+                        <a href="#" target="_blank" class="text-md font-semibold text-indigo-500 hover:text-indigo-700 flex items-center">
+                            ভিউ কোড 
+                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </a>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 md:py-32 bg-indigo-50" id="contact">
+        <div class="container mx-auto px-6 max-w-3xl animate-on-scroll">
+            <h2 class="text-4xl font-bold text-center mb-16 text-gray-900 relative after:content-[''] after:block after:w-16 after:h-1 after:bg-indigo-500 after:mx-auto after:mt-3">
+                আমার সাথে যোগাযোগ
+            </h2>
+            <form id="contact-form" class="bg-white p-10 rounded-xl shadow-2xl border border-indigo-200">
+                <p class="text-lg text-gray-600 mb-6 text-center">আপনার প্রজেক্টের ধারণা বা কাজের সুযোগ নিয়ে আলোচনা করতে যোগাযোগ করুন।</p>
+                <div class="grid md:grid-cols-2 gap-6 mb-4">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">নাম</label>
+                        <input type="text" id="name" name="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300" required>
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">ইমেইল</label>
+                        <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300" required>
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label for="message" class="block text-sm font-medium text-gray-700 mb-1">বার্তা</label>
+                    <textarea id="message" name="message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold w-full hover:bg-indigo-700 text-lg shadow-xl">বার্তা পাঠান</button>
+                <p id="form-message" class="mt-4 text-center hidden font-bold"></p>
+            </form>
+            
+            <div class="text-center mt-12">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">অন্যান্য প্ল্যাটফর্মে</h3>
+                <div class="space-x-6 flex justify-center">
+                    <a href="#" target="_blank" class="text-3xl text-gray-500 hover:text-indigo-600 transition duration-300 transform hover:scale-110">
+                        <span>LinkedIn</span>
+                    </a>
+                    <a href="#" target="_blank" class="text-3xl text-gray-500 hover:text-gray-900 transition duration-300 transform hover:scale-110">
+                        <span>GitHub</span>
+                    </a>
+                    <a href="#" target="_blank" class="text-3xl text-gray-500 hover:text-pink-600 transition duration-300 transform hover:scale-110">
+                        <span>Behance</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-800 text-gray-300 py-8 text-center">
+        <p>&copy; <span id="current-year"></span> আপনার নাম। ডিজাইন ও ডেভেলপমেন্টে: HTML, Tailwind CSS, JS।</p>
+    </footer>
+
+   <script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+
+    // ** 1. স্ক্রোল অ্যানিমেশন (Animate on Scroll - Simple JS) এবং স্কিল ট্যাগ অ্যানিমেশন **
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            // স্কিল ট্যাগ অ্যানিমেশন
+            if (entry.target.classList.contains('skill-tag-animate')) {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateX(0)';
+                    observer.unobserve(entry.target);
+                }
+                return;
+            }
+            
+            // সেকশন অ্যানিমেশন
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1 
+    });
+
+    document.querySelectorAll('.animate-on-scroll, .skill-tag-animate').forEach(el => {
+        if (el.classList.contains('skill-tag-animate')) {
+            el.style.opacity = '0';
+            el.style.transform = 'translateX(-10px)';
+        }
+        observer.observe(el);
+    });
+
+
+    // ** 2. ফর্ম জমা হ্যান্ডলিং **
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const messageElement = document.getElementById('form-message');
+        
+        messageElement.textContent = 'বার্তা পাঠানো হয়েছে! শীঘ্রই যোগাযোগ করব।';
+        messageElement.classList.remove('hidden');
+        messageElement.classList.add('text-green-600');
+        this.reset();
+        
+        setTimeout(() => {
+            messageElement.classList.add('hidden');
+        }, 5000);
+    });
+    
+    // ** 3. নেভিগেশন বার হোভার এফেক্ট (ডেস্কটপ)**
+    document.querySelectorAll('.nav-link').forEach(link => {
+        const underline = link.querySelector('span');
+        link.addEventListener('mouseenter', () => {
+            underline.style.width = '100%';
+        });
+        link.addEventListener('mouseleave', () => {
+            underline.style.width = '0%'; // প্রস্থ 0% এ ফিরিয়ে আনা হলো
+        });
+    });
+    
+    // ** 4. মোবাইল মেনু টগল **
+    const menuButton = document.getElementById('menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    const closeIcon = document.getElementById('close-icon');
+    
+    if (menuButton && mobileMenu) {
+        menuButton.addEventListener('click', () => {
+            // মেনু ওপেন/ক্লোজ টগল
+            mobileMenu.classList.toggle('is-open');
+            
+            // আইকন পরিবর্তন
+            menuIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+        });
+    
+        // মেনুর লিংকে ক্লিক করলে মেনুটি বন্ধ হবে
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('is-open');
+                menuIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+            });
+        });
+    }
+</script>
+</body>
+</html>
